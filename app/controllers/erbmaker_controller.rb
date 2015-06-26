@@ -3,22 +3,26 @@ class ErbMaker
     @app = app
   end
 
-  def call(env)
-
-
-
-    status, headers, response = @app.call(env)
-
+  def template_string
     html = File.read('./lib/templates/index.html.erb')
     template = ERB.new(html)
+    template.result(binding)
+  end
 
-    if env["PATH_INFO"] == "/about"
-      body = "<h1><a href='/'>Are you lost?</a></h1>"
-    else
-      body = response.first + template.result(binding)
-    end
+  def lost_message_string
+    "<h1><a href='/'>Are you lost?</a></h1>"
+  end
 
-    # body = response.first + template.result(binding)
+  def set_body(path, last_response)
+
+    path == "/about" ? lost_message_string : last_response + template_string
+
+  end
+
+  def call(env)
+    status, headers, response = @app.call(env)
+
+    body = set_body(env["PATH_INFO"], response.first)
 
     [status, headers, [body]]
   end
