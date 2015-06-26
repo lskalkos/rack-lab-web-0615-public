@@ -14,9 +14,7 @@ class ErbMaker
   end
 
   def set_body(path, last_response)
-
     path == "/about" ? lost_message_string : last_response + template_string
-
   end
 
   def call(env)
